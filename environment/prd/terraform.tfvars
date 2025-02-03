@@ -19,3 +19,15 @@ ssm_pod_subnets = [
   "/linuxtips-kubernetes-vpc/subnets/private/us-east-1b/linuxtips-pods-1b",
   "/linuxtips-kubernetes-vpc/subnets/private/us-east-1c/linuxtips-pods-1c"
 ]
+
+auto_scale_options = {
+  min     = 1
+  max     = 10
+  desired = 2
+}
+
+nodes_instances_sizes = [
+  "t3.medium",
+  "t3.large",
+  "t3.xlarge"
+]
