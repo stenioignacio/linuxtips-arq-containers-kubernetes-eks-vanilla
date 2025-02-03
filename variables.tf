@@ -40,23 +40,3 @@ variable "ssm_private_subnets" {
 variable "ssm_pod_subnets" {
   type = list(string)
 }
-
-variable "auto_scale_options" {
-  type = object({
-    min     = number
-    max     = number
-    desired = number
-  })
-}
-
-variable "nodes_instances_sizes" {
-  type = list(string)
-}
-
-# Nodes Groups - Custom
-
-variable "custom_ami" {
-  type        = string
-  description = "AMI ID customizada para os nodes"
-  default     = "ami-005cb9eccb9a1b0f2"
-}
