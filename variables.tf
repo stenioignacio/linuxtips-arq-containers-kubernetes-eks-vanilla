@@ -65,3 +65,14 @@ variable "karpenter_capacity" {
     availability_zones = list(string)
   }))
 }
+# HTTPS
+
+# variable "domain" {
+#   type    = string
+#   default = "*.seudomain.com.br"
+# }
+
+# variable "route53_hosted_zone" {
+#   type    = string
+#   default = "sua_hosted_zone_id"
+# }

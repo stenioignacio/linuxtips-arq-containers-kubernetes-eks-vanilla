@@ -11,7 +11,7 @@ metadata:
   name: chip
   namespace: chip
 spec:
-  replicas: 50
+  replicas: 3
   selector:
     matchLabels:
       app: chip
@@ -23,26 +23,21 @@ spec:
         version: v1
     spec:
 
-      # nodeSelector:
-      #   karpenter.sh/nodepool: chip-capacity
-
+      # Topology Spread da zona de disponibilidade
       topologySpreadConstraints:
-      # Distribuir capacity's com base em parametros de zona e tipo de instancia
       - maxSkew: 1
-        # O "node.kubernetes.io/instance-type" é usado pra manter instancias balanciadas por tipos de instancia diferentes
-        # topologyKey: "node.kubernetes.io/instance-type"
-        # O "topology.kubernetes.io/zone" é usado pra manter instancias balanciadas por avaiability zones diferentes
         topologyKey: "topology.kubernetes.io/zone"
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
             app: chip
-      # - maxSkew: 1
-      #   topologyKey: "kubernetes.sh/capacity-type"
-      #   whenUnsatisfiable: ScheduleAnyway
-      #   labelSelector:
-      #     matchLabels:
-      #       app: chip
+
+      - maxSkew: 1
+        topologyKey: "node.kubernetes.io/instance-type"
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            app: chip
 
       containers:
       - name: chip
@@ -52,9 +47,6 @@ spec:
           name: http
         resources:
           requests:
-            cpu: 250m
-            memory: 512Mi
-          limits:
             cpu: 250m
             memory: 512Mi
         startupProbe:
@@ -100,6 +92,36 @@ spec:
   - name: web
     port: 8080
     protocol: TCP
+    targetPort: 8080
   selector:
     app: chip
-  type: ClusterIP
+  type: LoadBalancer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: chip-ingress
+  namespace: chip
+  annotations:
+    alb.ingress.kubernetes.io/scheme: "internet-facing" # Expor o ALB publicamente (use "internal" para privado)
+    alb.ingress.kubernetes.io/subnets: "subnet-05e696435e7815b9b,subnet-005c5c66cb9874388,subnet-00ca61ea442f05b6e" # Subnets específicas
+    alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/healthcheck-path: "/liveness"
+    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"
+    alb.ingress.kubernetes.io/healthcheck-protocol: "HTTP"
+  labels:
+    app.kubernetes.io/name: chip
+spec:
+  ingressClassName: alb
+  rules:
+  - host: chip.msfidelis.com.br # Substitua pelo seu domínio
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: chip
+            port:
+              number: 8080
