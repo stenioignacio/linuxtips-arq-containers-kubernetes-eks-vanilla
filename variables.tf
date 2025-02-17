@@ -53,10 +53,15 @@ variable "nodes_instances_sizes" {
   type = list(string)
 }
 
-# Nodes Groups - Custom
-
-variable "custom_ami" {
-  type        = string
-  description = "AMI ID customizada para os nodes"
-  default     = "ami-005cb9eccb9a1b0f2"
+variable "karpenter_capacity" {
+  type = list(object({
+    name               = string
+    workload           = string
+    ami_family         = string
+    ami_ssm            = string
+    instance_family    = list(string)
+    instance_sizes     = list(string)
+    capacity_type      = list(string)
+    availability_zones = list(string)
+  }))
 }

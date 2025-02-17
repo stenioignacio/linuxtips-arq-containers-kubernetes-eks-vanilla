@@ -7,7 +7,8 @@ resource "aws_eks_addon" "cni" {
 
   depends_on = [aws_eks_access_entry.nodes]
 }
-resource "aws_eks_addon" "codedns" {
+
+resource "aws_eks_addon" "coredns" {
   cluster_name                = aws_eks_cluster.main.id
   addon_name                  = "coredns"
   addon_version               = var.addon_coredns_version
