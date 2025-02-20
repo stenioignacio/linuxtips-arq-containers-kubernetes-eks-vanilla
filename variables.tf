@@ -3,11 +3,11 @@ variable "project_name" {
 }
 
 variable "region" {
-
+  default = "us-east-1"
 }
 
 variable "k8s_version" {
-
+  default = "1.32"
 }
 
 variable "ssm_vpc" {
@@ -47,10 +47,22 @@ variable "auto_scale_options" {
     max     = number
     desired = number
   })
+  default = {
+    min     = 1
+    max     = 10
+    desired = 2
+  }
 }
 
 variable "nodes_instances_sizes" {
   type = list(string)
+  default = [
+    "t3a.micro",
+    "t3a.small",
+    "t3a.medium",
+    "t3a.large",
+    "t3a.xlarge"
+  ]
 }
 
 variable "karpenter_capacity" {
@@ -64,6 +76,16 @@ variable "karpenter_capacity" {
     capacity_type      = list(string)
     availability_zones = list(string)
   }))
+  default = [{
+    name               = "general"
+    workload           = "general"
+    ami_family         = "Bottlerocket"
+    ami_ssm            = "/aws/service/bottlerocket/aws-k8s-1.31/x86_64/latest/image_id"
+    instance_family    = ["t3", "t3a"]
+    instance_sizes     = ["micro", "small", "medium", "large"]
+    capacity_type      = ["spot", "on-demand"]
+    availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
+  }]
 }
 # HTTPS
 
