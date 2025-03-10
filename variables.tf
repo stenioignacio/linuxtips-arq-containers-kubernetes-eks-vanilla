@@ -52,3 +52,8 @@ variable "auto_scale_options" {
 variable "nodes_instances_sizes" {
   type = list(string)
 }
+
+variable "addon_pod_identity_version" {
+  type    = string
+  default = "v1.3.4-eksbuild.1"
+}
