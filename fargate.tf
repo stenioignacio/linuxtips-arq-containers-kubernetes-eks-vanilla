@@ -23,3 +23,16 @@ resource "aws_eks_fargate_profile" "karpenter" {
     namespace = "karpenter"
   }
 }
+
+resource "aws_eks_fargate_profile" "ingress-nginx" {
+  cluster_name         = aws_eks_cluster.main.name
+  fargate_profile_name = "ingress-nginx"
+
+  pod_execution_role_arn = aws_iam_role.fargate.arn
+
+  subnet_ids = data.aws_ssm_parameter.pods_subnets[*].value
+
+  selector {
+    namespace = "ingress-nginx"
+  }
+}
