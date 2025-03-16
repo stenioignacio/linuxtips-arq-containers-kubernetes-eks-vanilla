@@ -29,6 +29,28 @@ resource "aws_eks_cluster" "main" {
     "scheduler"
   ]
 
+  // Automode
+
+  bootstrap_self_managed_addons = false
+
+  kubernetes_network_config {
+    elastic_load_balancing {
+      enabled = true
+    }
+  }
+
+  storage_config {
+    block_storage {
+      enabled = true
+    }
+  }
+
+  compute_config {
+    enabled       = true
+    node_pools    = ["general-purpose", "system"]
+    node_role_arn = aws_iam_role.eks_nodes_role.arn
+  }
+
   # Feramenta de recuperação de de desastres de falhas de AZ's para o Control Plane (ARC)
   zonal_shift_config {
     enabled = true
