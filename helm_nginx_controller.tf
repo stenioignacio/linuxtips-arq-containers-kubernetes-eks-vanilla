@@ -65,6 +65,27 @@ resource "helm_release" "nginx_controller" {
     value = var.nginx_limits_memory
   }
 
+  # Service Monitors
+  set {
+    name  = "controller.metrics.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.metrics.serviceMonitor.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.podAnnotatios.prometheus\\.io/scrape"
+    value = "true"
+  }
+
+  set {
+    name  = "controller.podAnnotatios.prometheus\\.io/port"
+    value = "10254"
+  }
+
   set {
     name  = "controller.kind"
     value = "Deployment"
