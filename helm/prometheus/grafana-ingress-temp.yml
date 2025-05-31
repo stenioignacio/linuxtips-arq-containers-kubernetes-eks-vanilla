@@ -7,7 +7,8 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: linuxtips-kubernetes-cluster-7e59de445a59128f.elb.us-east-1.amazonaws.com
+  #Era pra ser grafana.signacio.com.br mas o pc do trabalho bloqueia DNS "suspeitos"
+  - host: grafana.signacio.com.br
     http:
       paths:
       - path: /

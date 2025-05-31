@@ -7,7 +7,7 @@ variable "region" {
 }
 
 variable "k8s_version" {
-  default = "1.32"
+  default = "1.31"
 }
 
 variable "ssm_vpc" {
@@ -109,41 +109,50 @@ variable "karpenter_capacity" {
 #   default = "sua_hosted_zone_id"
 # }
 
+#Grafana
+variable "grafana_host" {
+  type        = string
+  default = "grafana.signacio.com.br"
+  # default     = "linuxtips-kubernetes-cluster-ac0403775ad3b673.elb.us-east-1.amazonaws.com"
+  description = "Host do Grafana"
+}
 
-# Nginx
+#Istio
 
-variable "nginx_min_replicas" {
+variable "istio_version" {
   type    = string
+  description = "Istio version"
+  default = "1.24.3"
+}
+
+variable "istio_max_replicas" {
+  type    = number
+  default = "20"
+}
+
+variable "istio_min_replicas" {
+  type    = number
   default = "3"
 }
 
-variable "nginx_max_replicas" {
-  type    = string
-  default = "10"
-}
-
-variable "nginx_requests_cpu" {
-  type    = string
-  default = "200m"
-}
-
-variable "nginx_max_utilization_cpu_percentage" {
-  type    = string
+variable "istio_cpu_treshold" {
+  type    = number
   default = "80"
 }
 
-variable "nginx_requests_memory" {
-  type    = string
-  default = "512Mi"
+#Jaeger
+variable "jaeger_host" {
+  type = string
+  default = "jeager.signacio.com.br"
 }
 
-variable "nginx_limits_cpu" {
-  type    = string
-  default = "500m"
+#Kiali
+variable "kiali_host" {
+  type = string
+  default = "kiali.signacio.com.br"
 }
 
-variable "nginx_limits_memory" {
-  type    = string
-  default = "1024Mi"
-
+variable "kiali_version" {
+  type = string
+  default = "2.5"
 }

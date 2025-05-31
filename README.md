@@ -1,4 +1,14 @@
 <!-- BEGIN_TF_DOCS -->
+## Payload
+```sh
+curl --location --request POST 'http://health.signacio.com.br/calculator' --header 'Content-Type: application/json' --data-raw '{
+    "age": 26,
+    "weight": 90.0,
+    "height": 1.77,
+    "gender": "M",
+    "activity_intensity": "very_active"
+ } ' --silent | jq .
+```
 
 ## Requirements
 
