@@ -156,3 +156,10 @@ variable "kiali_version" {
   type = string
   default = "2.5"
 }
+
+#Keda
+variable "keda_version" {
+  type = string
+  description = "Versao do Keda"
+  default = "2.16.0"
+}

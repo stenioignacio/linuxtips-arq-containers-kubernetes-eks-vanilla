@@ -10,6 +10,24 @@ curl --location --request POST 'http://health.signacio.com.br/calculator' --head
  } ' --silent | jq .
 ```
 
+### Payload com loop
+
+```sh
+while true; do curl --location --request POST 'http://health.signacio.com.br/calculator' --header 'Content-Type: application/json' --data-raw '{ 
+
+   "age": 26,
+
+   "weight": 90.0,
+
+   "height": 1.77,
+
+   "gender": "M", 
+
+   "activity_intensity": "very_active"
+
+} ' --silent | jq . ; echo; done;
+```
+
 ## Requirements
 
 | Name      | Version  |

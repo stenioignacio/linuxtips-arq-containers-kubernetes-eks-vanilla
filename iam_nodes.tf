@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "nodes" {
 }
 
 resource "aws_iam_role" "eks_nodes_role" {
-  name = format("%s-eks-nodes-role", var.project_name)
+  name = format("%s-eks-nodes-role-1", var.project_name)
 
   assume_role_policy = data.aws_iam_policy_document.nodes.json
 }
