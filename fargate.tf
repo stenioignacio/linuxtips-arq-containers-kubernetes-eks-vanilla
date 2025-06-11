@@ -1,4 +1,3 @@
-
 resource "aws_eks_fargate_profile" "karpenter" {
   cluster_name         = aws_eks_cluster.main.name
   fargate_profile_name = "karpenter"
@@ -22,5 +21,18 @@ resource "aws_eks_fargate_profile" "keda" {
 
   selector {
     namespace = "keda"
+  }
+}
+
+resource "aws_eks_fargate_profile" "rollouts" {
+  cluster_name         = aws_eks_cluster.main.name
+  fargate_profile_name = "rollouts"
+
+  pod_execution_role_arn = aws_iam_role.fargate.arn
+
+  subnet_ids = data.aws_ssm_parameter.pods_subnets[*].value
+
+  selector {
+    namespace = "rollouts"
   }
 }

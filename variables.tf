@@ -91,7 +91,7 @@ variable "karpenter_capacity" {
     workload           = "general"
     ami_family         = "Bottlerocket"
     ami_ssm            = "/aws/service/bottlerocket/aws-k8s-1.31/x86_64/latest/image_id"
-    instance_family    = ["t3", "t3a"]
+    instance_family    = ["t3", "t3a","t2a","t2"]
     instance_sizes     = ["micro", "small", "medium", "large"]
     capacity_type      = ["spot", "on-demand"]
     availability_zones = ["us-east-1a", "us-east-1b", "us-east-1c"]
@@ -162,4 +162,17 @@ variable "keda_version" {
   type = string
   description = "Versao do Keda"
   default = "2.16.0"
+}
+
+#Argo Rollouts
+variable "argo_rollouts_host" {
+  type        = string
+  default     = "rollouts.signacio.com.br"
+  description = "Host do Argo Rollouts"
+}
+variable "argo_rollouts_version" {
+  type        = string
+  description = "Versao do Argo Rollouts"
+  default     = "2.34.1"
+  
 }
