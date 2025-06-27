@@ -1,0 +1,174 @@
+app:
+  name: linuxtips
+  createNamespace: true
+  namespace: linuxtips
+  image:
+    repository: nginx
+    tag: latest
+    pullPolicy: IfNotPresent
+  iam: ""
+
+  # Rollout config
+  capacity:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    autoscaling:
+      min: 10
+      max: 5
+      targetCPUUtilizationPercentage: 80
+    nodepool:
+      enabled: true
+      name: general
+
+  envs:
+  - name: ENV
+    value: "dev"
+  - name: FOO
+    value: "bar"
+
+  probes:
+    startupProbe:
+      enabled: true
+      failureThreshold: 10
+      periodSeconds: 10
+      httpGet:
+        path: /
+        port: 80
+    readinessProbe:
+      enabled: true
+      failureThreshold: 10
+      periodSeconds: 10
+      httpGet:
+        path: /
+        port: 80
+    livenessProbe:
+      enabled: true
+      failureThreshold: 10
+      periodSeconds: 10
+      httpGet:
+        path: /
+        port: 80
+
+  # Argo Rollouts config
+  rollout:
+    revisionHistoryLimit: 10
+    version: v1
+    strategy:
+      canary:
+        enabled: true
+        steps:
+        - setWeight: 20
+        - pause: { duration: 30s }
+        - analysis:
+            templates:
+            - istio-success
+        - setWeight: 40
+        - pause: { duration: 30s }
+        - setWeight: 60
+        - pause: { duration: 30s }
+        - setWeight: 80
+        - pause: { duration: 30s }
+        - setWeight: 100
+    analysisTemplates:
+    - name: 'istio-success'
+      spec:
+      - name: success-rate
+        interval: 2m
+        failureLimit: 0
+        successCondition: result[0] >= 0.95
+        count: 1
+        provider:
+          prometheus:
+            address: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
+            query: |
+              sum(irate(
+                istio_requests_total{destination_service=~"linuxtips.linuxtips.svc.cluster.local",response_code!~"5.*"}[1m]
+              )) /
+              sum(irate(
+                istio_requests_total{destination_service=~"linuxtips.linuxtips.svc.cluster.local"}[1m]
+              ))
+
+  prometheus:
+    serviceMonitor:
+      enabled: true
+      interval: 30s
+      scrapeTimeout: 10s
+      port: http
+      path: /metrics
+
+  # KEDA config
+  keda:
+    enabled: true
+    hpaConfig:
+      behavior:
+        scaleDown:
+          stabilizationWindowSeconds: 20
+        scaleUp:
+          stabilizationWindowSeconds: 20
+      cooldownPeriod: 30
+      pollingInterval: 10
+    #Escolher a forma de escalonamento
+    prometheus:
+      # - name: keda-scale-tps
+      #   metricName: istio_requests_total
+      #   query: |
+      #     sum(rate(
+      #       istio_requests_total{destination_service=~"linuxtips"[1m]
+      #     )) /
+      #     sum(rate(
+      #       istio_requests_total{destination_service=~"linuxtips"}[1m]
+      #     ))
+      #   serverAddress: http://prometheus-kube-prometheus-prometheus.prometheus.svc.cluster.local:9090
+      #   threshold: "10"
+    cron:
+      # - name: scale-up
+      #   start: "25 14 * * *"
+      #   end: "30 14 * * *"
+      #   timezone: "America/Sao_Paulo"
+      #   desiredReplicas: "20"
+    memory:
+      # - name: memory-high
+      #   metricType: Utilization
+      #   threshold: 80
+    cpu:
+    - name: cpu-high
+      metricType: Utilization
+      threshold: 80
+    sqs:
+      # - name: queue-high
+      #   metricType: Utilization
+      #   awsRegion: us-east-1
+      #   queueURL: https://sqs.us-east-1.amazonaws.com/123456789012/my-queue
+      #   queueLength: 50
+
+      # Istio config
+  istio:
+    host: istio.signacio.com.br
+    gateway:
+      enabled: true
+      protocol: HTTP
+      port: 80
+
+    virtualService:
+      enabled: true
+      http:
+        enabled: true
+        port: 80
+        retries:
+          attempts: 1
+          perTryTimeout: 2s
+          retryOn: 5xx
+
+  # Service config
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: https
+    port: 443
+    targetPort: 443

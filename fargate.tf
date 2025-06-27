@@ -33,6 +33,6 @@ resource "aws_eks_fargate_profile" "rollouts" {
   subnet_ids = data.aws_ssm_parameter.pods_subnets[*].value
 
   selector {
-    namespace = "rollouts"
+    namespace = "argo-rollouts"
   }
 }

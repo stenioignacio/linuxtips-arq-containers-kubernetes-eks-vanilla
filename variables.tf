@@ -176,3 +176,9 @@ variable "argo_rollouts_version" {
   default     = "2.34.1"
   
 }
+
+#ArgoCD
+variable "argocd_host" {
+  type = string
+  default = "argocd.signacio.com.br"
+}
