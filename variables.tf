@@ -182,3 +182,10 @@ variable "argocd_host" {
   type = string
   default = "argocd.signacio.com.br"
 }
+
+// Chaos Mesh 
+variable "chaos_mesh_host" {
+  type        = string
+  default     = "chaos-mesh.msfidelis.com.br"
+  description = "Host do Chaos Mesh"
+}
